@@ -1,0 +1,15 @@
+{
+  "name": "showbyname",
+  "version": "1.0.0",
+  "description": "Vamos a mostrar cada una de las imagenes que se encuentran en la carpeta `images` cuando la ruta tenga su mismo nombre.",
+  "main": "app.js",
+  "scripts": {
+    "test": "test",
+    "start": "nodemon start"
+  },
+  "author": "yo",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
