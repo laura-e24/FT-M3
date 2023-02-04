@@ -42,8 +42,8 @@ class $Promise {
       this._state = 'pending';
       this._value = undefined;
       this.executor = executor;
-      this._handlerGroups = []
-
+      this._handlerGroups = [];
+      
       this.executor((value) => this._internalResolve(value), (reason) => this._internalReject(reason))
    }
 
@@ -69,19 +69,30 @@ class $Promise {
          if (this._state === 'fulfilled' && currentHandler.successCb)
             currentHandler.successCb(this._value)
          
-         if ( this._state === 'rejected' && currentHandler.errorCb)
+         if (this._state === 'rejected' && currentHandler.errorCb)
             currentHandler.errorCb(this._value)
       }
    }
 
+   _resolver(value) {
+      this._value = value;
+      this._state = 'fulfilled'
+   }
+
    then(onfulfilled, onreject) {
+      const that = this;
       const handlerGroup = {
          successCb: typeof onfulfilled === 'function' ? onfulfilled : false,
-         errorCb: typeof onreject === 'function'? onreject : false
+         errorCb: typeof onreject === 'function' ? onreject : false,
+         downstreamPromise: new $Promise((resolve, reject) => {
+            if (!onfulfilled || !onreject) this._callHandlers()
+            if (that._state === 'fulfilled')  resolve(that._value)
+            if (that._state === 'rejected')  reject(that._value)
+         })
       }
-      
       this._handlerGroups.push(handlerGroup)
       if  (this._state !== 'pending') this._callHandlers()
+      return handlerGroup.downstreamPromise
    }   
 
    catch(onreject) {
